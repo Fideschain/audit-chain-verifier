@@ -1,0 +1,39 @@
+{
+  "envelope": {
+    "service": "fideschain",
+    "version": "audit-export-v1",
+    "schema_version": "v1",
+    "exported_at": "2026-05-19T08:00:00.000000Z",
+    "customer_id": "00000000-0000-0000-0000-000000000001",
+    "filter": {"action": null, "from": null, "to": null, "q": null},
+    "row_count": 3,
+    "data_sha256": "89e8037d1b3989aeda78d7a7c68fdcc8e5da782c70cdafd038aa8748baa564de",
+    "signature_alg": "HMAC-SHA-256",
+    "signature_key_id": "2026-05.v1",
+    "signature": "7827c98412441e7f3cc45a7bdb4f0f475928e6ec44c735c7bb70540f9b6ca4c3",
+    "verification_url": "https://fideschain.fr/docs/audit-verification"
+  },
+  "data": [
+    {
+      "id": 1,
+      "ts": "2026-05-19T07:00:00.000000Z",
+      "action": "screen.person",
+      "row_hash": "d3c450a58ecd8103eb364ad34b62c32da61507e6ab0125d0b25e9115500efe78",
+      "payload_redacted": {"name_hash": "abc123"}
+    },
+    {
+      "id": 2,
+      "ts": "2026-05-19T07:01:00.000000Z",
+      "action": "screen.wallet",
+      "row_hash": "387380d57f556cb1cdcf04bae0fc69e53e7ad084fe0f7de2c42dbc0558314cb0",
+      "payload_redacted": {"address_hash": "TAMPERED"}
+    },
+    {
+      "id": 3,
+      "ts": "2026-05-19T07:02:00.000000Z",
+      "action": "policy.adopt",
+      "row_hash": "2e6cdc1b61abeda8ac35f80ff4198a0d0eeac958a44fe7bed02962b4d90fb584",
+      "payload_redacted": {"policy_id": "p-001"}
+    }
+  ]
+}

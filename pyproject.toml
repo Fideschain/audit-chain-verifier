@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "audit-chain-verifier"
+version = "1.0.0"
+description = "Open-source verifier for FidesChain audit-chain exports."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.11"
+authors = [
+    { name = "FidesChain", email = "contact@fideschain.fr" },
+]
+keywords = ["audit", "verification", "compliance", "mica", "fideschain"]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Security :: Cryptography",
+    "Topic :: System :: Logging",
+]
+# ZERO runtime dependencies. The verifier uses only the Python
+# standard library so a regulator can install + run it on a fresh
+# Python 3.11 box without a network connection.
+dependencies = []
+
+[project.urls]
+Homepage = "https://fideschain.fr"
+Source = "https://github.com/nicochevrier206/audit-chain-verifier"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["audit_chain_verifier*"]
+exclude = ["tests*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 99
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP", "SIM", "RUF"]
