@@ -1,6 +1,6 @@
 {
-  "_comment": "Placeholder. Step 5 of 4.5c.7 submits ONE real anchor to Sepolia from a funded test wallet; the resulting tx_hash, root_hex, and block_number get pinned here forever as a 'real on-chain anchor we know is intact' CI regression fixture. Until step 5 runs, the OnChainAnchorTests case SKIPs gracefully whether ETH_SEPOLIA_RPC_URL is set or not (the test_verify_anchor_on_chain_sepolia method checks for both env var AND fixture completeness before running).",
-  "tx_hash": null,
-  "expected_root_hex": null,
-  "expected_block_number": null
+  "_comment": "Pinned by step 5 of 4.5c.7-anchor on Sepolia. The test test_verify_anchor_on_chain_sepolia loads this file, fetches the tx via ETH_SEPOLIA_RPC_URL, and asserts the tx's calldata bytes equal expected_root_hex. The tx is immutable on-chain; this fixture is therefore a permanent regression assertion against real Ethereum. The Merkle root anchored here is the same one tests/fixtures/anchor_inclusion.json's expected_merkle_root_hex declares, so passing this test simultaneously proves the verifier's RPC path AND the cross-implementation Merkle equivalence with the FidesChain backend.",
+  "tx_hash": "0x716fefaa18d3b6cd3181546be557e60d4db23c09c3235184e77939be7b63d3da",
+  "expected_root_hex": "8a74c86774260ec309d7b08019ad2edefbbf4ea22a467dcbcf6b8e1ef882c7b0",
+  "expected_block_number": 10879388
 }
