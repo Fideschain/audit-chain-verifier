@@ -30,7 +30,7 @@ dependencies = []
 
 [project.urls]
 Homepage = "https://fideschain.fr"
-Source = "https://github.com/nicochevrier206/audit-chain-verifier"
+Source = "https://github.com/fideschain/audit-chain-verifier"
 
 [tool.setuptools.packages.find]
 where = ["."]

@@ -118,7 +118,7 @@ The verifier is a script. You do not need to install it. Copy
 location and run the script with Python 3.11+:
 
 ```
-git clone https://github.com/nicochevrier206/audit-chain-verifier
+git clone https://github.com/fideschain/audit-chain-verifier
 cd audit-chain-verifier
 python3 verify.py tests/fixtures/clean.json
 ```
@@ -165,7 +165,7 @@ sufficient.
 Verification failures on a real customer export are the regulator's
 escalation signal. If you suspect the verifier itself is broken — a
 false PASS or a false FAIL on a known-good chain — open an issue at
-`https://github.com/nicochevrier206/audit-chain-verifier/issues` with the
+`https://github.com/fideschain/audit-chain-verifier/issues` with the
 export file (redacted where appropriate) and the exact command you
 ran. A reproducer wins more than a description.
 
