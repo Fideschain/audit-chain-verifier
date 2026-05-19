@@ -86,6 +86,45 @@ FAIL: row_hash mismatch at id=2 expected=387380d57f556cb1… got=39fda2d95654811
 VERIFICATION: FAIL rows_verified=3 failures=1
 ```
 
+## What anchoring proves
+
+Schema-v2 bundles can include an `envelope.anchor` field referencing
+an Ethereum transaction whose calldata equals a Merkle root computed
+over every row's hash in the export. Anchoring proves the export
+existed by the timestamp of the anchored Ethereum block — without
+trusting FidesChain, the customer, or this verifier.
+
+Tampering with any row of the export changes that row's hash, which
+changes the Merkle root, which no longer equals the calldata bytes
+of the anchored transaction. Forging an entirely new anchor
+transaction requires writing to Ethereum mainnet with a fresh wallet
+and waiting for confirmation — at which point the block timestamp
+proves the forgery happened after the original export, not before.
+Anchoring does not prove the rows were generated in the order they
+appear; the row id sequence + per-row hash already cover that.
+
+To verify the anchor pass an Ethereum JSON-RPC URL via
+`--anchor-rpc`. Any public mainnet RPC works; no signup required:
+
+```
+python3 verify.py audit_chain_export.json --anchor-rpc https://eth.llamarpc.com
+```
+
+A successful anchor verification prints a second line above the
+`VERIFICATION` line:
+
+```
+ANCHOR: PASS block=20123456 timestamp=2026-05-19T09:00:00Z
+VERIFICATION: PASS rows_verified=5 hmac=not-checked chain_intact=true
+```
+
+When the export carries no anchor field (older v1 bundles, or v2
+bundles for a range the customer has not yet anchored), the verifier
+prints `ANCHOR: SKIPPED no-anchor-in-export` and the verification
+result is unaffected. When `--anchor-rpc` is omitted the verifier
+prints `ANCHOR: SKIPPED no-rpc` and only checks the per-row + chain
+integrity properties.
+
 ## How it works
 
 Each row in a FidesChain audit chain carries a SHA-256 hash computed

@@ -31,6 +31,7 @@ import json
 from dataclasses import dataclass, field
 from typing import Any
 
+from .anchor import compute_merkle_root, verify_anchor_on_chain
 from .canonical import row_hash_hex
 
 
@@ -46,12 +47,22 @@ class VerifyResult:
     hmac_ok: bool | None = None
     chain_intact: bool = True
     schema_version: str | None = None
+    # Session 4.5c.7 — Ethereum-anchor verification outcome.
+    # ``None`` when the export carries no anchor field OR no
+    # ``anchor_rpc_url`` was supplied. ``True`` when the on-chain
+    # calldata equals the recomputed Merkle root. ``False`` on
+    # mismatch — which the CLI maps to exit code 2 (integrity).
+    anchor_verified: bool | None = None
+    anchor_block_number: int | None = None
+    anchor_block_timestamp: str | None = None
+    anchor_skip_reason: str | None = None
 
 
 def verify_export(
     export: dict[str, Any],
     *,
     hmac_key_hex: str | None = None,
+    anchor_rpc_url: str | None = None,
 ) -> VerifyResult:
     """Run all three integrity checks on a parsed export.
 
@@ -153,6 +164,69 @@ def verify_export(
                         "the supplied key"
                     )
                     result.hmac_ok = False
+
+    # ---- optional Ethereum anchor (Session 4.5c.7)
+    anchor = envelope.get("anchor") if isinstance(envelope, dict) else None
+    if anchor_rpc_url is None:
+        result.anchor_verified = None
+        result.anchor_skip_reason = "no-rpc"
+    elif not isinstance(anchor, dict):
+        result.anchor_verified = None
+        result.anchor_skip_reason = "no-anchor-in-export"
+    else:
+        merkle_root_hex = anchor.get("merkle_root_hex")
+        tx_hash = anchor.get("tx_hash")
+        if not isinstance(merkle_root_hex, str) or not isinstance(tx_hash, str):
+            result.failures.append(
+                "FAIL: malformed envelope.anchor — missing merkle_root_hex "
+                "or tx_hash"
+            )
+            result.anchor_verified = False
+        else:
+            # Recompute the Merkle root over the export's row_hashes
+            # FIRST — the export's claimed root must equal the
+            # recomputed root before we even talk to the chain.
+            row_hashes = [
+                r["row_hash"] for r in data if isinstance(r, dict) and r.get("row_hash")
+            ]
+            recomputed_root = compute_merkle_root(row_hashes)
+            if recomputed_root.lower() != merkle_root_hex.lower():
+                result.failures.append(
+                    f"FAIL: anchor Merkle root mismatch against export rows "
+                    f"expected={merkle_root_hex[:16]}… got={recomputed_root[:16]}…"
+                )
+                result.anchor_verified = False
+            else:
+                try:
+                    on_chain = verify_anchor_on_chain(
+                        anchor_rpc_url, tx_hash, merkle_root_hex
+                    )
+                except ConnectionError as exc:
+                    # Network unreachable is not an integrity failure —
+                    # the regulator should retry rather than escalate.
+                    result.anchor_skip_reason = f"rpc-unreachable: {exc}"
+                    result.anchor_verified = None
+                except ValueError as exc:
+                    # RPC-level error (e.g. tx_hash not found) IS an
+                    # integrity failure — the claimed tx doesn't exist.
+                    result.failures.append(
+                        f"FAIL: anchor tx not found on chain — {exc}"
+                    )
+                    result.anchor_verified = False
+                else:
+                    if on_chain["calldata_matches"]:
+                        result.anchor_verified = True
+                        result.anchor_block_number = on_chain["block_number"]
+                        result.anchor_block_timestamp = on_chain[
+                            "block_timestamp_iso"
+                        ]
+                    else:
+                        result.failures.append(
+                            f"FAIL: anchor calldata mismatch — "
+                            f"on-chain={on_chain['calldata_hex'][:16]}… "
+                            f"expected={merkle_root_hex[:16]}…"
+                        )
+                        result.anchor_verified = False
 
     result.passed = not result.failures
     return result

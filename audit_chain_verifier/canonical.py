@@ -27,7 +27,16 @@ from typing import Any
 
 # Pinned alongside ``backend/app/audit.py:SCHEMA_VERSION``. Any future
 # canonical-form change bumps both atomically.
-SCHEMA_VERSION: str = "v1"
+#
+# History:
+#   v1  — initial release. Canonical row form + envelope signature.
+#   v2  — adds optional envelope.anchor (Ethereum-mainnet Merkle
+#         anchor, Session 4.5c.7). Row canonical form is UNCHANGED —
+#         v1 row hashes recompute identically under v2 because the
+#         only change is an additive envelope field. v1 exports parse
+#         under v2 readers (the anchor field is simply absent).
+SCHEMA_VERSION: str = "v2"
+SCHEMA_VERSIONS_SUPPORTED: tuple[str, ...] = ("v1", "v2")
 
 
 def canonical_form(
@@ -111,4 +120,9 @@ def _normalise_ts(ts: str) -> str:
     return f"{date_part}T{time_part}.000000Z"
 
 
-__all__ = ["SCHEMA_VERSION", "canonical_form", "row_hash_hex"]
+__all__ = [
+    "SCHEMA_VERSION",
+    "SCHEMA_VERSIONS_SUPPORTED",
+    "canonical_form",
+    "row_hash_hex",
+]

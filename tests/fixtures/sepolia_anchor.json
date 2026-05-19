@@ -1,0 +1,6 @@
+{
+  "_comment": "Placeholder. Step 5 of 4.5c.7 submits ONE real anchor to Sepolia from a funded test wallet; the resulting tx_hash, root_hex, and block_number get pinned here forever as a 'real on-chain anchor we know is intact' CI regression fixture. Until step 5 runs, the OnChainAnchorTests case SKIPs gracefully whether ETH_SEPOLIA_RPC_URL is set or not (the test_verify_anchor_on_chain_sepolia method checks for both env var AND fixture completeness before running).",
+  "tx_hash": null,
+  "expected_root_hex": null,
+  "expected_block_number": null
+}

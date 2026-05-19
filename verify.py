@@ -62,6 +62,19 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     parser.add_argument(
+        "--anchor-rpc",
+        dest="anchor_rpc",
+        default=None,
+        help=(
+            "Optional Ethereum JSON-RPC URL. When the export carries an "
+            "envelope.anchor field, the verifier fetches the on-chain tx "
+            "via this RPC and asserts the calldata equals the Merkle "
+            "root recomputed locally from the export's row_hashes. Any "
+            "public mainnet RPC works (e.g. https://eth.llamarpc.com); "
+            "no signup required."
+        ),
+    )
+    parser.add_argument(
         "--version",
         action="version",
         version=f"audit-chain-verifier schema {SCHEMA_VERSION}",
@@ -96,10 +109,30 @@ def main(argv: list[str] | None = None) -> int:
         print("FAIL: export root must be a JSON object", file=sys.stderr)
         return EXIT_MALFORMED
 
-    result = verify_export(export, hmac_key_hex=args.hmac_key)
+    result = verify_export(
+        export,
+        hmac_key_hex=args.hmac_key,
+        anchor_rpc_url=args.anchor_rpc,
+    )
 
     for failure in result.failures:
         print(failure)
+
+    # Always print the anchor outcome line so a regulator reading the
+    # output knows whether the on-chain check ran. Three states:
+    # PASS, FAIL, SKIPPED.
+    if result.anchor_verified is True:
+        print(
+            f"ANCHOR: PASS block={result.anchor_block_number} "
+            f"timestamp={result.anchor_block_timestamp}"
+        )
+    elif result.anchor_verified is False:
+        # The specific FAIL line is already in result.failures and
+        # printed above; this is just the summary.
+        print("ANCHOR: FAIL see-above")
+    else:
+        reason = result.anchor_skip_reason or "no-rpc"
+        print(f"ANCHOR: SKIPPED {reason}")
 
     if result.passed:
         hmac_label = "validated" if result.hmac_checked else "not-checked"

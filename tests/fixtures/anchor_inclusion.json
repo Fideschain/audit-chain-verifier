@@ -1,0 +1,31 @@
+{
+  "_comment": "Shared cross-implementation fixture (Session 4.5c.7). The verifier-side stdlib implementation and the backend-side web3-bearing implementation MUST both produce the same Merkle root + inclusion proofs over these row_hashes. The backend test asserts equality against this file; the verifier test loads the same file. Drift = silent integrity loss.",
+  "row_hashes_hex": [
+    "d3c450a58ecd8103eb364ad34b62c32da61507e6ab0125d0b25e9115500efe78",
+    "387380d57f556cb1cdcf04bae0fc69e53e7ad084fe0f7de2c42dbc0558314cb0",
+    "2e6cdc1b61abeda8ac35f80ff4198a0d0eeac958a44fe7bed02962b4d90fb584",
+    "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+  ],
+  "expected_merkle_root_hex": "8a74c86774260ec309d7b08019ad2edefbbf4ea22a467dcbcf6b8e1ef882c7b0",
+  "expected_inclusion_proofs": {
+    "0": [
+      ["b270f2922a580bac3658246b068133c1c3715aceb5dd4540abd7fa140d210f88", "R"],
+      ["ed67893db46a7455dc92c15c082cadd42b6f4833065f88e3f936c64c6aa135f2", "R"],
+      ["1bee6619e5c929fab37bf20d256e46727c005c5779a7576ee07869d084bbb6c0", "R"]
+    ],
+    "3": [
+      ["d245b614da3c9ddd74bc8708534ba740513c67b4576699776ea38d33ae183120", "L"],
+      ["3cee9effa7db0827e7f595eb47e6a86014aa64b1dde7c285a1ec2e839704613a", "L"],
+      ["1bee6619e5c929fab37bf20d256e46727c005c5779a7576ee07869d084bbb6c0", "R"]
+    ],
+    "7": [
+      ["70c2e612049c44d5947db6e3a8802a2050a16f0d303ac40ba294da811768a9eb", "L"],
+      ["ed90bd1e32bc6a70d10c99dba0b4c253ef87d6ef7f20192c3095944b9c24fc92", "L"],
+      ["a4ec70a0f7ca8353f156b93be15d754de7868a8a63fff9f61c1aa5b639666c75", "L"]
+    ]
+  }
+}

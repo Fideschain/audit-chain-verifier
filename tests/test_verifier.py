@@ -37,7 +37,11 @@ def _load(name: str) -> dict:
 
 class CanonicalFormTests(unittest.TestCase):
     def test_schema_version_pinned(self) -> None:
-        self.assertEqual(SCHEMA_VERSION, "v1")
+        # v2 ships in 4.5c.7 — adds optional envelope.anchor; row
+        # canonical form is unchanged so v1 hashes still recompute
+        # identically under v2 readers (asserted in
+        # test_v1_export_still_passes_under_v2_reader below).
+        self.assertEqual(SCHEMA_VERSION, "v2")
 
     def test_canonical_form_byte_for_byte_stable(self) -> None:
         bytes_a = canonical_form(
